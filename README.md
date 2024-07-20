@@ -81,3 +81,4 @@ Conditions:
  - Must be a GitHub link (i.e. your project is open source)
  - Must be actively developed (and have executable releases)
 -->
+Developers: Mdbeach, Po1a
