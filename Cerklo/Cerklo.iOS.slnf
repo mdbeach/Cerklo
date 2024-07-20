@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "Cerklo.sln",
+    "projects": [
+      "Cerklo.Game\\Cerklo.Game.csproj",
+      "Cerklo.Resources\\Cerklo.Resources.csproj",
+      "Cerklo.iOS\\Cerklo.iOS.csproj"
+    ]
+  }
+}

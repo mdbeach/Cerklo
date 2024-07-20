@@ -1,0 +1,11 @@
+﻿{
+  "solution": {
+    "path": "Cerklo.sln",
+    "projects": [
+      "Cerklo.Desktop\\Cerklo.Desktop.csproj",
+      "Cerklo.Game\\Cerklo.Game.csproj",
+      "Cerklo.Game.Tests\\Cerklo.Game.Tests.csproj",
+      "Cerklo.Resources\\Cerklo.Resources.csproj"
+    ]
+  }
+}
