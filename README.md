@@ -7,7 +7,7 @@ Cerklo is an upcoming Rhythm/Visual novel game made in the [OSU! Framework](http
 # Credits
 > Developers:
 
-[Mdbeach](https://github.com/mdbeach),   
+[Mdbeach](https://github.com/mdbeach)   
 [Po1a](https://github.com/po1a)
 
 > Writers:
