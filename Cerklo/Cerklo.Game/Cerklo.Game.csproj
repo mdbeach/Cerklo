@@ -6,15 +6,6 @@
     <ProjectReference Include="..\Cerklo.Resources\Cerklo.Resources.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Textures\**\*.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Tracks\**\*.wav" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Samples\**\*.wav" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="ppy.osu.Framework" Version="2024.329.0" />
   </ItemGroup>
 </Project>

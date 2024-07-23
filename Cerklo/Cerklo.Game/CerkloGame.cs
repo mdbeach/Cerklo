@@ -13,8 +13,6 @@ namespace Cerklo.Game
         {
             Resources.AddStore(new DllResourceStore(@"AwesomeGame.dll"));
         }
-
-        [BackgroundDependencyLoader]
         private void load()
         {
             // Add your top-level game components here.
