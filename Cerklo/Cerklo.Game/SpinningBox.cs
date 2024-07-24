@@ -42,11 +42,5 @@ namespace Cerklo.Game
                 }
             };
         }
-
-        protected override void LoadComplete()
-        {
-            base.LoadComplete();
-            box.Loop(b => b.RotateTo(0).RotateTo(360, 2500));
-        }
     }
 }
