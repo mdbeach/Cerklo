@@ -49,7 +49,7 @@ namespace osu.Framework.Platform.SDL3
                     throw new InvalidOperationException($"Cannot set {nameof(RelativeMouseMode)} to true when the cursor is not hidden via {nameof(CursorState)}.");
 
                 relativeMouseMode = value;
-                ScheduleCommand(() => SDL_SetWindowRelativeMouseMode(SDLWindowHandle, value ? SDL_bool.SDL_TRUE : SDL_bool.SDL_FALSE));
+                ScheduleCommand(() => SDL_SetWindowRelativeMouseMode(SDLWindowHandle, value));
                 updateCursorConfinement();
             }
         }
@@ -111,7 +111,7 @@ namespace osu.Framework.Platform.SDL3
         {
             bool confined = CursorState.HasFlagFast(CursorState.Confined);
 
-            ScheduleCommand(() => SDL_SetWindowMouseGrab(SDLWindowHandle, confined ? SDL_bool.SDL_TRUE : SDL_bool.SDL_FALSE));
+            ScheduleCommand(() => SDL_SetWindowMouseGrab(SDLWindowHandle, confined));
 
             // Don't use SDL_SetWindowMouseRect when relative mode is enabled, as relative mode already confines the OS cursor to the window.
             // This is fine for our use case, as UserInputManager will clamp the mouse position.
@@ -336,7 +336,7 @@ namespace osu.Framework.Platform.SDL3
             SDL_Joystick* joystick = SDL_OpenJoystick(instanceID);
 
             SDL_Gamepad* controller = null;
-            if (SDL_IsGamepad(instanceID) == SDL_bool.SDL_TRUE)
+            if (SDL_IsGamepad(instanceID))
                 controller = SDL_OpenGamepad(instanceID);
 
             controllers[instanceID] = new SDL3ControllerBindings(joystick, controller);
@@ -466,24 +466,24 @@ namespace osu.Framework.Platform.SDL3
 
         private void handleMouseMotionEvent(SDL_MouseMotionEvent evtMotion)
         {
-            if (SDL_GetWindowRelativeMouseMode(SDLWindowHandle) == SDL_bool.SDL_FALSE)
+            if (!SDL_GetWindowRelativeMouseMode(SDLWindowHandle))
                 MouseMove?.Invoke(new Vector2(evtMotion.x * Scale, evtMotion.y * Scale));
             else
                 MouseMoveRelative?.Invoke(new Vector2(evtMotion.xrel * Scale, evtMotion.yrel * Scale));
         }
 
-        protected virtual void HandleTextInputEvent(SDL_TextInputEvent evtText)
+        private void handleTextInputEvent(SDL_TextInputEvent evtText)
         {
             string? text = evtText.GetText();
             Debug.Assert(text != null);
-            TriggerTextInput(text);
+            TextInput?.Invoke(text);
         }
 
-        protected virtual void HandleTextEditingEvent(SDL_TextEditingEvent evtEdit)
+        private void handleTextEditingEvent(SDL_TextEditingEvent evtEdit)
         {
             string? text = evtEdit.GetText();
             Debug.Assert(text != null);
-            TriggerTextEditing(text, evtEdit.start, evtEdit.length);
+            TextEditing?.Invoke(text, evtEdit.start, evtEdit.length);
         }
 
         private void handleKeyboardEvent(SDL_KeyboardEvent evtKey)
@@ -517,15 +517,15 @@ namespace osu.Framework.Platform.SDL3
 
         private void handlePenTouchEvent(SDL_PenTouchEvent evtPenTouch)
         {
-            if (evtPenTouch.eraser == SDL_bool.SDL_TRUE)
+            if (evtPenTouch.eraser)
                 return;
 
-            handlePenPressEvent(0, evtPenTouch.down == SDL_bool.SDL_TRUE);
+            handlePenPressEvent(0, evtPenTouch.down);
         }
 
         private void handlePenButtonEvent(SDL_PenButtonEvent evtPenButton)
         {
-            handlePenPressEvent(evtPenButton.button, evtPenButton.down == SDL_bool.SDL_TRUE);
+            handlePenPressEvent(evtPenButton.button, evtPenButton.down);
         }
 
         private void handlePenPressEvent(byte penButton, bool pressed)
@@ -713,14 +713,10 @@ namespace osu.Framework.Platform.SDL3
         /// </summary>
         public event Action<string>? TextInput;
 
-        protected void TriggerTextInput(string text) => TextInput?.Invoke(text);
-
         /// <summary>
         /// Invoked when an IME text editing event occurs.
         /// </summary>
         public event TextEditingDelegate? TextEditing;
-
-        protected void TriggerTextEditing(string text, int start, int length) => TextEditing?.Invoke(text, start, length);
 
         /// <inheritdoc cref="IWindow.KeymapChanged"/>
         public event Action? KeymapChanged;
