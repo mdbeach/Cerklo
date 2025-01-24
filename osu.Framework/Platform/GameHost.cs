@@ -144,6 +144,7 @@ namespace osu.Framework.Platform
         protected IpcMessage OnMessageReceived(IpcMessage message) => MessageReceived?.Invoke(message);
 
         public virtual Task SendMessageAsync(IpcMessage message) => throw new NotSupportedException("This platform does not implement IPC.");
+        public virtual Task<IpcMessage> SendMessageWithResponseAsync(IpcMessage message) => throw new NotSupportedException("This platform does not implement IPC.");
 
         /// <summary>
         /// Requests that a file or folder be opened externally with an associated application, if available.
@@ -200,6 +201,13 @@ namespace osu.Framework.Platform
         /// Provides a sane starting point for user-accessible storage.
         /// </remarks>
         public virtual string InitialFileSelectorPath => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+        /// <summary>
+        /// Creates a provider component for interacting with a system-provided file selector.
+        /// </summary>
+        /// <param name="allowedExtensions">The list of extensions allowed to be selected, or empty to allow all files.</param>
+        [CanBeNull]
+        public virtual ISystemFileSelector CreateSystemFileSelector(string[] allowedExtensions) => null;
 
         /// <summary>
         /// Retrieve a storage for the specified location.
@@ -514,7 +522,7 @@ namespace osu.Framework.Platform
                     Renderer.WaitUntilNextFrameReady();
 
                 didRenderFrame = false;
-                buffer = drawRoots.GetForRead();
+                buffer = drawRoots.GetForRead(IsActive.Value ? TripleBuffer<DrawNode>.DEFAULT_READ_TIMEOUT : 0);
             }
 
             if (buffer == null)
@@ -733,6 +741,7 @@ namespace osu.Framework.Platform
                 CacheStorage = GetDefaultGameStorage().GetStorageForDirectory("cache");
 
                 SetupForRun();
+                game.SetupLogging(Storage, CacheStorage);
 
                 populateInputHandlers();
 

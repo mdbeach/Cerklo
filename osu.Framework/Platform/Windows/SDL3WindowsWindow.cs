@@ -5,6 +5,7 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using osu.Framework.Input;
 using osu.Framework.Input.Handlers.Mouse;
 using osu.Framework.Platform.SDL3;
 using osu.Framework.Platform.Windows.Native;
@@ -59,16 +60,16 @@ namespace osu.Framework.Platform.Windows
                 Native.Input.SetWindowFeedbackSetting(WindowHandle, feedbackType, false);
         }
 
-        protected override void HandleEventFromFilter(SDL_Event evt)
+        protected override bool HandleEventFromFilter(SDL_Event e)
         {
-            switch (evt.Type)
+            switch (e.Type)
             {
                 case SDL_EventType.SDL_EVENT_WINDOW_FOCUS_LOST:
                     warpCursorFromFocusLoss();
                     break;
             }
 
-            base.HandleEventFromFilter(evt);
+            return base.HandleEventFromFilter(e);
         }
 
         public Vector2? LastMousePosition { get; set; }
@@ -92,10 +93,10 @@ namespace osu.Framework.Platform.Windows
             }
         }
 
-        public override void StartTextInput(bool allowIme)
+        public override void StartTextInput(TextInputProperties properties)
         {
-            base.StartTextInput(allowIme);
-            ScheduleCommand(() => Imm.SetImeAllowed(WindowHandle, allowIme));
+            base.StartTextInput(properties);
+            ScheduleCommand(() => Imm.SetImeAllowed(WindowHandle, properties.Type.SupportsIme() && properties.AllowIme));
         }
 
         public override void ResetIme() => ScheduleCommand(() => Imm.CancelComposition(WindowHandle));

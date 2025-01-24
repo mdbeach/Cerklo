@@ -860,8 +860,9 @@ namespace osu.Framework.Platform.SDL3
             }
         }
 
-        public static WindowState ToWindowState(this SDL_WindowFlags windowFlags)
+        public static WindowState ToWindowState(this SDL_WindowFlags windowFlags, bool isFullscreenBorderless)
         {
+            // for windows
             if (windowFlags.HasFlagFast(SDL_WindowFlags.SDL_WINDOW_BORDERLESS))
                 return WindowState.FullscreenBorderless;
 
@@ -869,7 +870,7 @@ namespace osu.Framework.Platform.SDL3
                 return WindowState.Minimised;
 
             if (windowFlags.HasFlagFast(SDL_WindowFlags.SDL_WINDOW_FULLSCREEN))
-                return WindowState.Fullscreen;
+                return isFullscreenBorderless ? WindowState.FullscreenBorderless : WindowState.Fullscreen;
 
             if (windowFlags.HasFlagFast(SDL_WindowFlags.SDL_WINDOW_MAXIMIZED))
                 return WindowState.Maximised;
@@ -1009,6 +1010,34 @@ namespace osu.Framework.Platform.SDL3
                 h = rectangle.Height,
                 w = rectangle.Width,
             };
+
+        public static SDL_TextInputType ToSDLTextInputType(this TextInputType type)
+        {
+            switch (type)
+            {
+                default:
+                case TextInputType.Text:
+                    return SDL_TextInputType.SDL_TEXTINPUT_TYPE_TEXT;
+
+                case TextInputType.Name:
+                    return SDL_TextInputType.SDL_TEXTINPUT_TYPE_TEXT_NAME;
+
+                case TextInputType.EmailAddress:
+                    return SDL_TextInputType.SDL_TEXTINPUT_TYPE_TEXT_EMAIL;
+
+                case TextInputType.Username:
+                    return SDL_TextInputType.SDL_TEXTINPUT_TYPE_TEXT_USERNAME;
+
+                case TextInputType.Number:
+                    return SDL_TextInputType.SDL_TEXTINPUT_TYPE_NUMBER;
+
+                case TextInputType.Password:
+                    return SDL_TextInputType.SDL_TEXTINPUT_TYPE_TEXT_PASSWORD_HIDDEN;
+
+                case TextInputType.NumericalPassword:
+                    return SDL_TextInputType.SDL_TEXTINPUT_TYPE_NUMBER_PASSWORD_HIDDEN;
+            }
+        }
 
         public static unsafe DisplayMode ToDisplayMode(this SDL_DisplayMode mode, int displayIndex)
         {
